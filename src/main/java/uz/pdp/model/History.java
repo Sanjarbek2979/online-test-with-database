@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Date;
 @Data
 public class History {
     private Integer id;
-    private Date date;
+    private Timestamp date;
     private Double point;
     private UserAnswer userAnswer;
 }

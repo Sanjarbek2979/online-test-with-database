@@ -14,5 +14,9 @@ public class Database {
     public static List<Subject> subjects = new ArrayList<>();
     public static List<UserAnswer> userAnswers = new ArrayList<>();
     public static List<VariantAnswer> variantAnswers = new ArrayList<>();
+    public static void refreshDatabase(){
+        histories.clear();
+
+    }
 
 }
