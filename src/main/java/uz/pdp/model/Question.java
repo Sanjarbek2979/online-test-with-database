@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class Question {
     private Integer id;
     private String text;
-    private Subject subject;
+    private Integer subjectId;
     private String type;
     private boolean active;
-    private boolean correctAnswer;
+    private String correctAnswer;
 }

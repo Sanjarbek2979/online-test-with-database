@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class VariantAnswer {
     private Integer id;
     private String name;
-    private Question question;
+    private Integer question_id;
     private boolean isCorrect;
 }

@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserAnswer {
     private Integer id;
-    private Question question;
-    private User user;
+    private Integer question_id;
+    private Integer user_id;
     private String givenAnswer;
 
 }

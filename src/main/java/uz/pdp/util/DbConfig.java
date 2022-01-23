@@ -17,7 +17,7 @@ public class DbConfig {
     static String port = "5432"; //postgres  //oracle //345 //mysql// 123
 
     public static Connection ulanish()  {
-        Connection connection= null;
+        Connection connection = null;
         url="jdbc:postgresql://" + host+":"+port+"/"+dbName;
         try {
             Class.forName("org.postgresql.Driver");

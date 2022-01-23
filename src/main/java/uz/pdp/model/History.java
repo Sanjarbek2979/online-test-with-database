@@ -17,5 +17,5 @@ public class History {
     private Integer id;
     private Timestamp date;
     private Double point;
-    private UserAnswer userAnswer;
+    private Integer userAnswerId;
 }
