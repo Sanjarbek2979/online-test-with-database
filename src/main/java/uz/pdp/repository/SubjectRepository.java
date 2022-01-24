@@ -25,6 +25,6 @@ public class SubjectRepository {
             subject.setActive(resultSet.getBoolean(3));
             Database.subjects.add(subject);
         }
-        System.out.println("Refresh subjects");
+
     }
 }

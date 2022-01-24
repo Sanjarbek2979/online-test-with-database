@@ -1,17 +1,17 @@
 package uz.pdp.service;
 
+import com.google.gson.Gson;
+import uz.pdp.Main;
+import uz.pdp.dto.CorrectAnswersDto;
 import uz.pdp.enums.UserRole;
-import uz.pdp.model.Question;
-import uz.pdp.model.Subject;
-import uz.pdp.model.User;
-import uz.pdp.model.VariantAnswer;
+import uz.pdp.model.*;
 import uz.pdp.repository.Database;
 import uz.pdp.repository.QuestionRepository;
 
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,18 +20,29 @@ import java.util.Scanner;
  * @author Sanjarbek Allayev, чт 17:17. 20.01.2022
  */
 public class UserService {
-    public static UserRole getUserRole(String phone){
-UserRole userRole=null;
+    public static UserRole getUserRole(String phone) {
+        UserRole userRole = null;
         for (User user : Database.users) {
-            if(user.getPhone().equals(phone)){
-                userRole=user.getRole();
+            if (user.getPhone().equals(phone)) {
+                userRole = user.getRole();
             }
         }
-     return userRole;
+        return userRole;
     }
-    public static boolean checkUser(String phone){
+
+    public static User getUser(String phone) {
+        User currentUser = null;
+        for (User user1 : Database.users) {
+            if (user1.getPhone().equals(phone)) {
+                currentUser = user1;
+            }
+        }
+        return currentUser;
+    }
+
+    public static boolean checkUser(String phone) {
         for (User user : Database.users) {
-            if(user.getPhone().equals(phone)){
+            if (user.getPhone().equals(phone)) {
                 return true;
             }
         }
@@ -42,23 +53,25 @@ UserRole userRole=null;
         Database.refreshDatabase();
         System.out.println("Please wait a few seconds...");
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("Database is being updated...");
         try {
-            Thread.sleep(5000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("---------------------------------------------------------");
-        System.out.println("Please enter number of questions(min->4 " +
+        System.out.println("Please enter number of questions(min->3 " +
                 "max->20): ");
         int count;
+
         do {
             count = new Scanner(System.in).nextInt();
-        }while (count>20 || count<4);
+        } while (count > 20 || count < 3);
+
         System.out.println("---------------------------------------------------------");
         System.out.println("Type of questions: Easy, Medium, Hard");
         System.out.print("Enter type of questions: ");
@@ -67,21 +80,19 @@ UserRole userRole=null;
         System.out.println("All questions updated");
         System.out.println("For continue enter number (1)");
         System.out.println("For exit enter (0)");
-        int selection =new Scanner(System.in).nextInt();
-        if (selection==0){
+        int selection = new Scanner(System.in).nextInt();
+        if (selection == 0) {
             System.out.println("See you soon bro😋");
-        }
-        else{
+        } else {
             for (Subject subject : Database.subjects) {
-                System.out.println(subject.getId()+") "+subject.getName());
+                System.out.println(subject.getId() + ") " + subject.getName());
             }
             System.out.print("Please choose the subject id: ");
-            int subjectId=new Scanner(System.in).nextInt();
+            int subjectId = new Scanner(System.in).nextInt();
 
-            List<Question> questionUserList= new ArrayList<>();
-            questionUserList = QuestionRepository.getListQuestionByType(subjectId , type);
-
-            test(questionUserList,count);
+            List<Question> questionUserList;
+            questionUserList = QuestionRepository.getListQuestionByType(subjectId, type);
+            test(questionUserList, count);
 
 
         }
@@ -89,32 +100,138 @@ UserRole userRole=null;
     }
 
     private static void test(List<Question> questionUserList, int count) {
-        List<Integer> listNumbers= new ArrayList<>();
-        LocalDateTime now1 = LocalDateTime.now();
-        int soni=1;
-        while (count!=0){
+        int countOfQuestions = count;
+        int ball = 0;
+        UserAnswer userAnswer = null;
+        List<Integer> listNumbers = new ArrayList<>();
+        LocalTime now1 = LocalTime.now();
+        int soni = 1;
+        int correctAnswers = 0;
+        int incorrectAnswers = 0;
+        int time = 0;
+
+        int timeForTesting = 0;
+        int timeTest = countOfQuestions * 60;
+        System.out.println();
+        System.out.println("########################################");
+        System.out.println("Time for testing: " + timeTest / 60 + " minutes");
+        System.out.println("########################################");
+        System.out.println();
+        System.out.println("Starting...");
+        try {
+            Thread.sleep(1820);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        while (count > 0 && timeForTesting <= (now1.getSecond() + timeTest)) {
+            timeForTesting = LocalDateTime.now().getSecond();
             int randomNumber = getRandomNumber(1, questionUserList.size());
-            listNumbers.add(randomNumber);
-            if (!listNumbers.contains(randomNumber)){
-            System.out.println(soni+") "+questionUserList.get(randomNumber));
-                List<VariantAnswer> allVariants = getAllVariants(questionUserList.get(randomNumber).getId());
+            Question currentQuestion = questionUserList.get(randomNumber);
+            if (!listNumbers.contains(randomNumber)) {
+                System.out.println(soni + ") " + currentQuestion.getText());
+                List<VariantAnswer> allVariants = getAllVariants(currentQuestion.getId());
                 for (VariantAnswer allVariant : allVariants) {
                     System.out.println(allVariant.getName());
                 }
+                System.out.print("Your answer: ");
+                String answer = new Scanner(System.in).next();
+                String givenAnswer = null;
+                for (VariantAnswer allVariant : allVariants) {
+                    if (allVariant.getName().startsWith(answer.toUpperCase())) {
+                        givenAnswer = allVariant.getName();
+                    }
+                }
+                Integer userId = getUser(Main.currentUserPhone).getId();
+                userAnswer = new UserAnswer(currentQuestion.getId(), userId, givenAnswer);
+                try {
+                    UserAnswerService.addUserAnswer(userAnswer);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                Integer userAnswerId = userAnswer.getId();
+                String date = String.valueOf(now1);
+                Double point = (double) (correctAnswers * 5);
 
+                History history = new History(date,point,userAnswerId);
+//                try {
+//                    HistoryService.addHistory(history);
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+                for (VariantAnswer allVariant : allVariants) {
+                    if (allVariant.getName().startsWith(answer.toUpperCase())) {
+                        if (allVariant.isCorrect()) {
+                            ball = ball + 5;
+                            correctAnswers++;
+                        } else {
+                            incorrectAnswers++;
+                        }
+                    }
+                }
                 count--;
-            }
-            else {
-                count++;
+                listNumbers.add(randomNumber);
+                soni++;
             }
         }
-        LocalDateTime now2 = LocalDateTime.now();
+        LocalTime now2 = LocalTime.now();
+        System.out.println("Finished😀😀😀");
+        System.out.println("Please wait,now your answers are being checked.");
+        try {
+            Thread.sleep(1820);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int timeLeft = timeTest - (now2.getSecond() - now1.getSecond());
+
+
+
+
+        double successRate = Double.valueOf((double) (correctAnswers * 100 / countOfQuestions));
+        CorrectAnswersDto correctAnswersDto = new CorrectAnswersDto(countOfQuestions, correctAnswers, incorrectAnswers, (countOfQuestions * 5), ball, now2.getSecond() - now1.getSecond(), timeLeft, successRate, now2);
+        System.out.println();
+        System.out.println("+-------------------------------------------------------------+");
+        System.out.println("|                   YOUR RESULT ");
+        System.out.println("| Count of all questions : " + correctAnswersDto.getQuestions());
+        System.out.println("| Correct answers : " + correctAnswersDto.getCorrectAnswers());
+        System.out.println("| Incorrect answers : " + correctAnswersDto.getIncorrectAnswers());
+        System.out.println("| Overall : " + (countOfQuestions * 5) + " points");
+        System.out.println("| Your score : " + correctAnswersDto.getYourScore() + " points");
+        System.out.println("| Time(seconds) : " + (correctAnswersDto.getTime() / 60) + " minutes " + (correctAnswersDto.getTime() % 60) + " seconds");
+        System.out.println("| Time left (seconds) : " + (correctAnswersDto.getTimeLeft() / 60) + " minutes " + (correctAnswersDto.getTimeLeft() % 60) + " seconds");
+        System.out.println("| Success rate : " + correctAnswersDto.getSuccess() + " %");
+        System.out.println("| Date : " + correctAnswersDto.getDate());
+        System.out.println("+-------------------------------------------------------------+");
+        Database.userHistory.add(correctAnswersDto);
+        try {
+            CorrectAnswersDtoService.addCorrectAnswers(correctAnswersDto);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(1820);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("1. Back to menu");
+        System.out.println("0. Exit");
+        System.out.println("Select ");
+        int select=new Scanner(System.in).nextInt();
+        switch (select){
+            case 1->{
+
+        Main.userMenu();
+            }
+            case 0 ->{
+                System.out.println("See you soon 😪😪😪");
+            }
+            default -> System.out.println("Bilib turib ko`zga cho`p tiqish yaxshimas bro🤨🤨🤨");
+        }
     }
 
     public static List<VariantAnswer> getAllVariants(Integer id) {
         List<VariantAnswer> variantAnswers = new ArrayList<>();
         for (VariantAnswer variantAnswer : Database.variantAnswers) {
-            if (variantAnswer.getQuestion_id() == id){
+            if (variantAnswer.getQuestion_id() == id) {
                 variantAnswers.add(variantAnswer);
             }
         }
@@ -127,5 +244,22 @@ UserRole userRole=null;
 
     public static void history() {
 
+        List<CorrectAnswersDto> histories = Database.userHistory;
+    if (histories.isEmpty()){
+        System.out.println("History is empty!!!");
+        Main.userMenu();
+    }
+    else {
+        for (CorrectAnswersDto history : histories) {
+            System.out.println(history);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        }
+
+        Main.userMenu();
+    }
     }
 }

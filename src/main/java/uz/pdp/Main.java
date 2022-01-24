@@ -18,25 +18,17 @@ import java.util.Scanner;
  * @author Sanjarbek Allayev, чт 17:13. 20.01.2022
  */
 public class Main {
+    public static String currentUserPhone=null;
     public static final Scanner SCANNER_NUM= new Scanner(System.in);
     public static final Scanner SCANNER_STR= new Scanner(System.in);
 
 
     public static void main(String[] args) throws SQLException {
 
-        UserRepository.refreshUsers();
-        SubjectRepository.refreshSubjects();
-        HistoryRepository.refreshHistory();
-        QuestionRepository.refreshQuestions();
-        VariantAnswerRepository.refreshVariantAnswers();
-
         runn();
     }
 
-    private static void runn() {
-        for (Subject subject : Database.subjects) {
-            System.out.println(subject);
-        }
+    public static void runn() {
         try {
             Database.refreshDatabase();
         } catch (SQLException e) {
@@ -48,6 +40,7 @@ public class Main {
         System.out.println("   Please enter your phone for continue (if you wanna exit please enter 0) 👇👇👇");
         System.out.print("For example(+998xxxxxxxxx): ");
         String phoneNumber=SCANNER_STR.nextLine();
+        currentUserPhone=phoneNumber;
         if(phoneNumber.equals("0")){
 
             System.out.println("See you soon😪😪😪");
@@ -66,7 +59,12 @@ public class Main {
     }
 
 
-    private static void userMenu() {
+    public static void userMenu() {
+        try {
+            Database.refreshDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.out.println("+----------------------------------------+");
         System.out.println("|          Welcome to USER menu          |");
         System.out.println("+----------------------------------------+");
@@ -98,11 +96,15 @@ public class Main {
         }
     }
 
-    private static void superAdminMenu() {
-
+    public static void superAdminMenu() {
+        try {
+            Database.refreshDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void register(String phoneNumber) {
+    public static void register(String phoneNumber) {
         String name;
         System.out.print("Enter your name: ");
         name =SCANNER_STR.nextLine();
@@ -114,7 +116,14 @@ public class Main {
         userMenu();
     }
 
-    private static void adminMenu() {
+    public static void adminMenu() {
+        try {
+            Database.refreshDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
         System.out.println("+----------------------------------------+");
         System.out.println("|           Welcome ADMIN 😎😎😎          |");
         System.out.println("+----------------------------------------+");

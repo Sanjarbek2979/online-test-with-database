@@ -13,7 +13,7 @@ import java.sql.Statement;
  */
 public class VariantAnswerRepository {
     public static void refreshVariantAnswers() throws SQLException {
-        Database.subjects.clear();
+        Database.variantAnswers.clear();
         Connection ulanish = DbConfig.ulanish();
         Statement statement;
         statement = ulanish.createStatement();

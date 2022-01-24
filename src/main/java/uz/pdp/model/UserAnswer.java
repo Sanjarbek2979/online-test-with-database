@@ -16,4 +16,9 @@ public class UserAnswer {
     private Integer user_id;
     private String givenAnswer;
 
+    public UserAnswer(Integer question_id, Integer user_id, String givenAnswer) {
+        this.question_id = question_id;
+        this.user_id = user_id;
+        this.givenAnswer = givenAnswer;
+    }
 }

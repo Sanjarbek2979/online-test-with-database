@@ -1,5 +1,6 @@
 package uz.pdp.repository;
 
+import uz.pdp.dto.CorrectAnswersDto;
 import uz.pdp.model.*;
 import uz.pdp.util.DbConfig;
 
@@ -20,6 +21,7 @@ public class Database {
     public static List<UserAnswer> userAnswers = new ArrayList<>();
     public static List<VariantAnswer> variantAnswers = new ArrayList<>();
     public static List<User> users = new ArrayList<>();
+    public static List<CorrectAnswersDto> userHistory =new ArrayList<>();
 
     public static void refreshDatabase() throws SQLException {
         HistoryRepository.refreshHistory();
@@ -27,6 +29,7 @@ public class Database {
         SubjectRepository.refreshSubjects();
         UserRepository.refreshUsers();
         VariantAnswerRepository.refreshVariantAnswers();
+        CorrectAnswersDtoRepository.refreshCorrectAnswers();
     }
 
 }

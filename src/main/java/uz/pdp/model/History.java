@@ -15,7 +15,13 @@ import java.util.Date;
 @Data
 public class History {
     private Integer id;
-    private Timestamp date;
+    private String date;
     private Double point;
     private Integer userAnswerId;
+
+    public History(String date, Double point, Integer userAnswerId) {
+        this.date = date;
+        this.point = point;
+        this.userAnswerId = userAnswerId;
+    }
 }

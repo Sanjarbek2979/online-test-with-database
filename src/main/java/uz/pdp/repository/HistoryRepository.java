@@ -23,7 +23,7 @@ public class HistoryRepository {
         while (resultSet.next()) {
             History history = new History();
             history.setId(resultSet.getInt(1));
-            history.setDate(resultSet.getTimestamp(2));
+            history.setDate(resultSet.getString(2));
             history.setPoint(resultSet.getDouble(3));
             history.setUserAnswerId(resultSet.getInt(4));
             Database.histories.add(history);

@@ -2,6 +2,7 @@ package uz.pdp.repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import uz.pdp.enums.QuestionType;
 import uz.pdp.model.Question;
 import uz.pdp.model.Subject;
 import uz.pdp.util.DbConfig;
@@ -26,28 +27,39 @@ public class QuestionRepository {
             Question question = new Question();
             question.setId(resultSet.getInt(1));
             question.setText(resultSet.getString(2));
-            question.setSubjectId( resultSet.getInt(3));
-            question.setType(resultSet.getString(4));
+            question.setSubjectId(resultSet.getInt(3));
+            question.setType(QuestionType.valueOf(resultSet.getString(4)));
             question.setActive(resultSet.getBoolean(5));
             question.setCorrectAnswer(resultSet.getString(6));
             Database.questions.add(question);
         }
     }
+
     public static void callFunctionSelect() {
-        int i=1;
+        int i = 1;
         for (Question question : Database.questions) {
-            System.out.println(i+") "+question);
+            System.out.println(i + ") " + question);
             i++;
         }
     }
 
-    public static List<Question> getListQuestionByType(int subjectId, String type) {
+    public static List<Question> getListQuestionByType(int subjectId, String i_type) throws SQLException {
+        Connection connection = DbConfig.ulanish();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "select * from question where subject_id=? and type=?");
+        preparedStatement.setInt(1, subjectId);
+        preparedStatement.setString(2, i_type.toUpperCase());
+        ResultSet resultSet = preparedStatement.executeQuery();
         List<Question> questions = new ArrayList<>();
-
-        for (Question question : Database.questions) {
-            if (question.getType().equals(type.toUpperCase()) && question.getId()==subjectId){
-                questions.add(question);
-            }
+        while (resultSet.next()) {
+            Question question = new Question();
+            question.setId(resultSet.getInt(1));
+            question.setText(resultSet.getString(2));
+            question.setSubjectId(resultSet.getInt(3));
+            question.setType(QuestionType.valueOf(resultSet.getString(4)));
+            question.setActive(resultSet.getBoolean(5));
+            question.setCorrectAnswer(resultSet.getString(6));
+   questions.add(question);
         }
         return questions;
     }

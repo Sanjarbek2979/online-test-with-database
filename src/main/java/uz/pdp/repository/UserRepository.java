@@ -28,7 +28,7 @@ public class UserRepository {
             user.setDeleted(resultSet.getBoolean(6));
             Database.users.add(user);
         }
-        System.out.println("Refresh Users");
+
     }
 
     public static Response callFunctionRegister(String name,String phone) throws SQLException {
