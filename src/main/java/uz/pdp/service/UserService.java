@@ -187,23 +187,23 @@ public class UserService {
 
 
         double successRate = Double.valueOf((double) (correctAnswers * 100 / countOfQuestions));
-        CorrectAnswersDto correctAnswersDto = new CorrectAnswersDto(countOfQuestions, correctAnswers, incorrectAnswers, (countOfQuestions * 5), ball, now2.getSecond() - now1.getSecond(), timeLeft, successRate, now2);
+        CorrectAnswersDto history = new CorrectAnswersDto(countOfQuestions, correctAnswers, incorrectAnswers, (countOfQuestions * 5), ball, now2.getSecond() - now1.getSecond(), timeLeft, successRate, now2);
         System.out.println();
         System.out.println("+-------------------------------------------------------------+");
         System.out.println("|                   YOUR RESULT ");
-        System.out.println("| Count of all questions : " + correctAnswersDto.getQuestions());
-        System.out.println("| Correct answers : " + correctAnswersDto.getCorrectAnswers());
-        System.out.println("| Incorrect answers : " + correctAnswersDto.getIncorrectAnswers());
+        System.out.println("| Count of all questions : " + history.getQuestions());
+        System.out.println("| Correct answers : " + history.getCorrectAnswers());
+        System.out.println("| Incorrect answers : " + history.getIncorrectAnswers());
         System.out.println("| Overall : " + (countOfQuestions * 5) + " points");
-        System.out.println("| Your score : " + correctAnswersDto.getYourScore() + " points");
-        System.out.println("| Time(seconds) : " + (correctAnswersDto.getTime() / 60) + " minutes " + (correctAnswersDto.getTime() % 60) + " seconds");
-        System.out.println("| Time left (seconds) : " + (correctAnswersDto.getTimeLeft() / 60) + " minutes " + (correctAnswersDto.getTimeLeft() % 60) + " seconds");
-        System.out.println("| Success rate : " + correctAnswersDto.getSuccess() + " %");
-        System.out.println("| Date : " + correctAnswersDto.getDate());
+        System.out.println("| Your score : " + history.getYourScore() + " points");
+        System.out.println("| Time(seconds) : " + (history.getTime() / 60) + " minutes " + (history.getTime() % 60) + " seconds");
+        System.out.println("| Time left (seconds) : " + (history.getTimeLeft() / 60) + " minutes " + (history.getTimeLeft() % 60) + " seconds");
+        System.out.println("| Success rate : " + history.getSuccess() + " %");
+        System.out.println("| Date : " + history.getDate());
         System.out.println("+-------------------------------------------------------------+");
-        Database.userHistory.add(correctAnswersDto);
+        Database.userHistory.add(history);
         try {
-            CorrectAnswersDtoService.addCorrectAnswers(correctAnswersDto);
+            CorrectAnswersDtoService.addCorrectAnswers(history);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -250,13 +250,26 @@ public class UserService {
         Main.userMenu();
     }
     else {
+        int i=1;
         for (CorrectAnswersDto history : histories) {
-            System.out.println(history);
+            System.out.println(i+" - attempt");
+
+            System.out.println("+-------------------------------------------------------------+");
+            System.out.println("| Count of all questions : " + history.getQuestions());
+            System.out.println("| Correct answers : " + history.getCorrectAnswers());
+            System.out.println("| Incorrect answers : " + history.getIncorrectAnswers());
+            System.out.println("| Your score : " + history.getYourScore() + " points");
+            System.out.println("| Time(seconds) : " + (history.getTime() / 60) + " minutes " + (history.getTime() % 60) + " seconds");
+            System.out.println("| Time left (seconds) : " + (history.getTimeLeft() / 60) + " minutes " + (history.getTimeLeft() % 60) + " seconds");
+            System.out.println("| Success rate : " + history.getSuccess() + " %");
+            System.out.println("| Date : " + history.getDate());
+            System.out.println("+-------------------------------------------------------------+");
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+            i++;
         }
 
         Main.userMenu();
