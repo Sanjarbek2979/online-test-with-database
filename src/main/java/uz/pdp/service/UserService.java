@@ -92,16 +92,17 @@ public class UserService {
 
             List<Question> questionUserList;
             questionUserList = QuestionRepository.getListQuestionByType(subjectId, type);
-            test(questionUserList, count);
+            test(questionUserList, count,type);
 
 
         }
 
     }
 
-    private static void test(List<Question> questionUserList, int count) {
+    private static void test(List<Question> questionUserList, int count,String type) {
         int countOfQuestions = count;
         int ball = 0;
+       int balcha=getBalcha(type);
         UserAnswer userAnswer = null;
         List<Integer> listNumbers = new ArrayList<>();
         LocalTime now1 = LocalTime.now();
@@ -161,7 +162,7 @@ public class UserService {
                 for (VariantAnswer allVariant : allVariants) {
                     if (allVariant.getName().startsWith(answer.toUpperCase())) {
                         if (allVariant.isCorrect()) {
-                            ball = ball + 5;
+                            ball = ball + balcha;
                             correctAnswers++;
                         } else {
                             incorrectAnswers++;
@@ -194,6 +195,7 @@ public class UserService {
         System.out.println("| Count of all questions : " + history.getQuestions());
         System.out.println("| Correct answers : " + history.getCorrectAnswers());
         System.out.println("| Incorrect answers : " + history.getIncorrectAnswers());
+        System.out.println("| Not answered : " + (countOfQuestions-(correctAnswers+incorrectAnswers)));
         System.out.println("| Overall : " + (countOfQuestions * 5) + " points");
         System.out.println("| Your score : " + history.getYourScore() + " points");
         System.out.println("| Time(seconds) : " + (history.getTime() / 60) + " minutes " + (history.getTime() % 60) + " seconds");
@@ -228,6 +230,20 @@ public class UserService {
         }
     }
 
+    private static int getBalcha(String type) {
+        int balcha = 0;
+        if(type.toUpperCase().equals("EASY")){
+            balcha=5;
+        }
+        else if(type.toUpperCase().equals("MEDIUM")){
+            balcha=10;
+        }
+        else if(type.toUpperCase().equals("HARD")){
+            balcha=20;
+        }
+        return balcha;
+    }
+
     public static List<VariantAnswer> getAllVariants(Integer id) {
         List<VariantAnswer> variantAnswers = new ArrayList<>();
         for (VariantAnswer variantAnswer : Database.variantAnswers) {
@@ -250,6 +266,7 @@ public class UserService {
         Main.userMenu();
     }
     else {
+
         int i=1;
         for (CorrectAnswersDto history : histories) {
             System.out.println(i+" - attempt");
