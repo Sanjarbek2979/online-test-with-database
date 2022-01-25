@@ -30,7 +30,7 @@ public class CorrectAnswersDtoRepository {
             correctAnswersDto.setTime(resultSet.getInt(6));
             correctAnswersDto.setTimeLeft(resultSet.getInt(7));
             correctAnswersDto.setSuccess(resultSet.getDouble(8));
-            correctAnswersDto.setDate((LocalTime) resultSet.getObject(9));
+            correctAnswersDto.setDate( resultSet.getTime(9));
             Database.userHistory.add(correctAnswersDto);
         }
     }

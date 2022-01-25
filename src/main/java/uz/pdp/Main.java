@@ -3,12 +3,14 @@ package uz.pdp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
+import uz.pdp.dto.CorrectAnswersDto;
 import uz.pdp.enums.UserRole;
 import uz.pdp.model.Subject;
 import uz.pdp.model.User;
 import uz.pdp.model.UserAnswer;
 import uz.pdp.repository.*;
 import uz.pdp.response.Response;
+import uz.pdp.service.SubjectService;
 import uz.pdp.service.UserService;
 
 import java.sql.SQLException;
@@ -23,12 +25,12 @@ public class Main {
     public static final Scanner SCANNER_STR= new Scanner(System.in);
 
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, InterruptedException {
 
         runn();
     }
 
-    public static void runn() {
+    public static void runn() throws InterruptedException {
         try {
             Database.refreshDatabase();
         } catch (SQLException e) {
@@ -59,7 +61,7 @@ public class Main {
     }
 
 
-    public static void userMenu() {
+    public static void userMenu() throws InterruptedException {
         try {
             Database.refreshDatabase();
         } catch (SQLException e) {
@@ -104,35 +106,76 @@ public class Main {
         }
     }
 
-    public static void register(String phoneNumber) {
+    public static void register(String phoneNumber) throws InterruptedException {
         String name;
         System.out.print("Enter your name: ");
         name =SCANNER_STR.nextLine();
+        Response response = null;
         try {
-           UserRepository.callFunctionRegister(name, phoneNumber);
+            Thread.sleep(1000);
+             response = UserRepository.callFunctionRegister(name, phoneNumber);
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        userMenu();
+        if (response.isSuccess()) {
+            userMenu();
+        }
+        else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Something went wrong please try again");
+            try {
+                Thread.sleep(1920);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Main.runn();
+        }
     }
 
-    public static void adminMenu() {
+    public static void adminMenu() throws InterruptedException {
         try {
             Database.refreshDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-
         System.out.println("+----------------------------------------+");
         System.out.println("|           Welcome ADMIN 😎😎😎          |");
         System.out.println("+----------------------------------------+");
         System.out.println();
-        System.out.println("1.USER CRUD");
-        System.out.println("2.SUBJECT CRUD");
-        System.out.println("3.QUESTION CRUD");
-        System.out.println("4.VARIANT ANSWERS CRUD");
+        System.out.println("1.SUBJECT CRUD");
+        System.out.println("2.QUESTION CRUD");
+        System.out.println("3.USER ANSWERS HISTORY");
         System.out.println("0.Exit");
+        System.out.print("Choose: ");
+        int selection= new Scanner(System.in).nextInt();
+        switch (selection){
+            case 1->{
+                SubjectService.subjectCRUD();
+            }
+            case 2->{
+
+
+            }
+            case 3->{
+
+            }
+            case 4->{
+
+            }
+            case 0->{
+                System.out.println("See you soon 😥😥😥");
+            }
+            default -> System.out.println("Next time bro😎😎😎");
+        }
+
+
     }
 
 

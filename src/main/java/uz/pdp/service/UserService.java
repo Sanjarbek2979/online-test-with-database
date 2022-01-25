@@ -7,11 +7,14 @@ import uz.pdp.enums.UserRole;
 import uz.pdp.model.*;
 import uz.pdp.repository.Database;
 import uz.pdp.repository.QuestionRepository;
+import uz.pdp.repository.UserAnswerRepository;
 
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -145,15 +148,22 @@ public class UserService {
                 Integer userId = getUser(Main.currentUserPhone).getId();
                 userAnswer = new UserAnswer(currentQuestion.getId(), userId, givenAnswer);
                 try {
+                    System.out.println(userAnswer);
                     UserAnswerService.addUserAnswer(userAnswer);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                Integer userAnswerId = userAnswer.getId();
+                System.out.println(userAnswer.getId());
                 String date = String.valueOf(now1);
                 Double point = (double) (correctAnswers * 5);
 
-                History history = new History(date,point,userAnswerId);
+                int userAnswerId = userAnswer.getId();
+                try {
+                    Database.refreshDatabase();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+//                History history = new History(date,point,userAnswerId);
 //                try {
 //                    HistoryService.addHistory(history);
 //                } catch (SQLException e) {
@@ -174,7 +184,8 @@ public class UserService {
                 soni++;
             }
         }
-        LocalTime now2 = LocalTime.now();
+        LocalTime now2= LocalTime.now();
+        Time now3 = new Time(now2.getLong(ChronoField.MILLI_OF_SECOND));
         System.out.println("Finished😀😀😀");
         System.out.println("Please wait,now your answers are being checked.");
         try {
@@ -188,7 +199,7 @@ public class UserService {
 
 
         double successRate = Double.valueOf((double) (correctAnswers * 100 / countOfQuestions));
-        CorrectAnswersDto history = new CorrectAnswersDto(countOfQuestions, correctAnswers, incorrectAnswers, (countOfQuestions * 5), ball, now2.getSecond() - now1.getSecond(), timeLeft, successRate, now2);
+        CorrectAnswersDto history = new CorrectAnswersDto(countOfQuestions, correctAnswers, incorrectAnswers, (countOfQuestions * 5), ball, now2.getSecond() - now1.getSecond(), timeLeft, successRate, now3);
         System.out.println();
         System.out.println("+-------------------------------------------------------------+");
         System.out.println("|                   YOUR RESULT ");
@@ -221,7 +232,11 @@ public class UserService {
         switch (select){
             case 1->{
 
-        Main.userMenu();
+                try {
+                    Main.userMenu();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             case 0 ->{
                 System.out.println("See you soon 😪😪😪");
@@ -263,7 +278,11 @@ public class UserService {
         List<CorrectAnswersDto> histories = Database.userHistory;
     if (histories.isEmpty()){
         System.out.println("History is empty!!!");
-        Main.userMenu();
+        try {
+            Main.userMenu();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     else {
 
@@ -289,7 +308,11 @@ public class UserService {
             i++;
         }
 
-        Main.userMenu();
+        try {
+            Main.userMenu();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     }
 }
